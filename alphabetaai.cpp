@@ -64,6 +64,7 @@ Point AlphaBetaAI::alphabetaSearch(std::vector<Point> &state, bool nowcolor, int
         nextStep.score=evaluateState(state,nextStep.color);
         return nextStep;
     }
+    //这里的getPossibleNextStep返回的栈顶部存储的是高价值的落子位置，即有利于下面的启发式搜索，因为高价值的点搜索时能增大剪枝的概率
     std::stack<Point>nextPossibleStep=getPossibleNextStep(state,nowcolor);
     //qDebug()<<"nextPossibleStep 最顶部元素所代表的分数是"<<nextPossibleStep.top().score;
     Point maxPoint(nowcolor,-1,-1,-INF),minPoint(nowcolor,-1,-1,INF);

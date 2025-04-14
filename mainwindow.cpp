@@ -100,8 +100,6 @@ static bool distanceJudge(int x1, int y1, int x2, int y2)
 }
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    qDebug()<<"activate mouseMoveEvent";
-    event->accept();
     int x = event->position().x();
     int y = event->position().y();
 
@@ -192,8 +190,6 @@ bool MainWindow::judgeWinOrLose(){
 }
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    event->accept();
-    qDebug()<<"activate mouseReleaseEvent";
     //判断此时有没有点被选中，如果选中的话才能继续
     if (selectPos == false)
         return;
