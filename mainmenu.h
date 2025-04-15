@@ -5,7 +5,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include "gamemodel.h"
-
+#include "videodialog.h"
 class MainMenu : public QDialog {
     Q_OBJECT
 public:
@@ -18,11 +18,12 @@ public:
 private slots:
     void onStartClicked();
     void onGameTypeChanged(int index);
-
+    void onPlayVideoClicked();
 private:
     QComboBox *gameTypeCombo;
     QComboBox *aiTypeCombo;
     QPushButton *startButton;
+    QPushButton *videoButton;
     GameType gameType = MAN;
     AIType aiType = LOCALEVALUATION;
 };

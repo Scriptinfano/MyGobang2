@@ -19,6 +19,7 @@ MainMenu::MainMenu(QWidget *parent) : QDialog(parent) {
     aiTypeCombo->setEnabled(false);
 
     startButton = new QPushButton("开始游戏", this);
+    videoButton = new QPushButton("播放算法讲解视频", this);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QHBoxLayout *gameTypeLayout = new QHBoxLayout;
@@ -32,10 +33,11 @@ MainMenu::MainMenu(QWidget *parent) : QDialog(parent) {
     mainLayout->addLayout(gameTypeLayout);
     mainLayout->addLayout(aiTypeLayout);
     mainLayout->addWidget(startButton);
+    mainLayout->addWidget(videoButton);
 
-    connect(gameTypeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &MainMenu::onGameTypeChanged);
+    connect(gameTypeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),this, &MainMenu::onGameTypeChanged);
     connect(startButton, &QPushButton::clicked, this, &MainMenu::onStartClicked);
+    connect(videoButton, &QPushButton::clicked, this, &MainMenu::onPlayVideoClicked);
 }
 
 void MainMenu::onStartClicked() {
@@ -61,4 +63,10 @@ void MainMenu::onGameTypeChanged(int index) {
         aiTypeCombo->setEnabled(false);
         gameType=MAN;
     }
+}
+
+void MainMenu::onPlayVideoClicked() {
+    VideoDialog *videoDialog = new VideoDialog(this);
+    videoDialog->setAttribute(Qt::WA_DeleteOnClose);  // 关闭时自动销毁
+    videoDialog->exec();
 }
