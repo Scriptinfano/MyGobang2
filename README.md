@@ -1,0 +1,2 @@
+# MyGobang2
+基于QT框架开发的五子棋对战游戏，实现了增强的alpha-beta剪枝算法以及纯代码实现的MCTS
