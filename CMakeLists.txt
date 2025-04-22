@@ -8,8 +8,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(MACOSX_BUNDLE_ICON_FILE MyGobang2.icns)
 set(APP_ICON icons/MyGobang2.icns)
-set_source_files_properties(${APP_ICON} PROPERTIES
-    MACOSX_PACKAGE_LOCATION "Resources")
+
+# 把图标（或其他资源文件）打包进 macOS .app 应用中，并放进 .app 结构中的 Contents/Resources 目录里。
+set_source_files_properties(${APP_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Multimedia MultimediaWidgets Sql)
 
@@ -45,7 +46,7 @@ install(TARGETS MyGoBang2
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 install(DIRECTORY videos DESTINATION ${CMAKE_INSTALL_PREFIX}/MyGoBang2.app/Contents/Resources)
-install(DIRECTORY data DESTINATION ${CMAKE_INSTALL_PREFIX}/MyGoBang2.app/Contents/Resources)
+# install(DIRECTORY data DESTINATION ${CMAKE_INSTALL_PREFIX}/MyGoBang2.app/Contents/Resources)
 qt_generate_deploy_app_script(
     TARGET MyGoBang2
     OUTPUT_SCRIPT deploy_script
