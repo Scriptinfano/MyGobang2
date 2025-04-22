@@ -9,7 +9,7 @@
 #include <QTimer>
 #include "point.h"
 #include <QDebug>
-MainWindow::MainWindow(const GameType &gametype,const AIType &aitype,QWidget *parent)
+MainWindow::MainWindow(std::shared_ptr<DataBaseManager>&theDatabaseManager,const GameType &gametype,const AIType &aitype,QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -21,6 +21,9 @@ MainWindow::MainWindow(const GameType &gametype,const AIType &aitype,QWidget *pa
     int height=MARGIN * 3 + BLOCK_SIZE * (BOARD_GRID_SIZE-1);
     int width=MARGIN * 2 + blockTotalLength;
     setFixedSize(width,height);
+
+    //赋值数据库接口
+    databaseManager=theDatabaseManager;
     // 初始化游戏
     initGame(gametype,aitype);
 }

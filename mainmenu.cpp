@@ -1,43 +1,55 @@
 // MainMenu.cpp
 #include "mainmenu.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-MainMenu::MainMenu(QWidget *parent) : QDialog(parent) {
+
+MainMenu::MainMenu(std::shared_ptr<DataBaseManager>&theDatabaseManager,QWidget *parent) : QDialog(parent) {
     setWindowTitle("五子棋");
 
-    QLabel *gameTypeLabel = new QLabel("选择游戏模式:", this);
-    gameTypeCombo = new QComboBox(this);
+    databaseManager=theDatabaseManager;
+
+    gameTypeLabel = std::make_unique<QLabel>("选择游戏模式:", this);
+    gameTypeCombo = std::make_unique<QComboBox>(this);
     gameTypeCombo->addItem("人人对战");
     gameTypeCombo->addItem("人机对战");
 
-    QLabel *aiTypeLabel = new QLabel("选择AI算法:", this);
-    aiTypeCombo = new QComboBox(this);
+    aiTypeLabel = std::make_unique<QLabel>("选择AI算法:", this);
+    aiTypeCombo = std::make_unique<QComboBox>(this);
     aiTypeCombo->addItem("局部评估");
     aiTypeCombo->addItem("蒙特卡洛");
     aiTypeCombo->addItem("AlphaBeta");
     aiTypeCombo->setEnabled(false);
 
-    startButton = new QPushButton("开始游戏", this);
-    videoButton = new QPushButton("播放算法讲解视频", this);
+    userLabel=std::make_unique<QLabel>("选择用户",this);
+    userCombo=std::make_unique<QComboBox>(this);
+    //TODO userCombo加载数据库中的条目
+    userCombo->addItems(databaseManager->getAllUsernames());
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    QHBoxLayout *gameTypeLayout = new QHBoxLayout;
-    gameTypeLayout->addWidget(gameTypeLabel);
-    gameTypeLayout->addWidget(gameTypeCombo);
 
-    QHBoxLayout *aiTypeLayout = new QHBoxLayout;
-    aiTypeLayout->addWidget(aiTypeLabel);
-    aiTypeLayout->addWidget(aiTypeCombo);
+    startButton =std::make_unique<QPushButton>("开始游戏", this);
+    videoButton = std::make_unique<QPushButton>("播放算法讲解视频", this);
 
-    mainLayout->addLayout(gameTypeLayout);
-    mainLayout->addLayout(aiTypeLayout);
-    mainLayout->addWidget(startButton);
-    mainLayout->addWidget(videoButton);
+    mainLayout = std::make_unique<QVBoxLayout>(this);
 
-    connect(gameTypeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),this, &MainMenu::onGameTypeChanged);
-    connect(startButton, &QPushButton::clicked, this, &MainMenu::onStartClicked);
-    connect(videoButton, &QPushButton::clicked, this, &MainMenu::onPlayVideoClicked);
+    gameTypeLayout = std::make_unique<QHBoxLayout>();
+    gameTypeLayout->addWidget(gameTypeLabel.get());
+    gameTypeLayout->addWidget(gameTypeCombo.get());
+
+    aiTypeLayout = std::make_unique<QHBoxLayout>();
+    aiTypeLayout->addWidget(aiTypeLabel.get());
+    aiTypeLayout->addWidget(aiTypeCombo.get());
+
+    userLayout= std::make_unique<QHBoxLayout>();
+    userLayout->addWidget(userLabel.get());
+    userLayout->addWidget(userCombo.get());
+
+    mainLayout->addLayout(gameTypeLayout.get());
+    mainLayout->addLayout(aiTypeLayout.get());
+    mainLayout->addLayout(userLayout.get());
+    mainLayout->addWidget(startButton.get());
+    mainLayout->addWidget(videoButton.get());
+
+    connect(gameTypeCombo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged),this, &MainMenu::onGameTypeChanged);
+    connect(startButton.get(), &QPushButton::clicked, this, &MainMenu::onStartClicked);
+    connect(videoButton.get(), &QPushButton::clicked, this, &MainMenu::onPlayVideoClicked);
 }
 
 void MainMenu::onStartClicked() {

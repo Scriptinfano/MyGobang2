@@ -6,6 +6,7 @@
 #include "localevaluationai.h"
 #include "alphabetaai.h"
 #include "mctsai.h"
+#include "databasemanager.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -15,11 +16,14 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(const GameType &gametype,const AIType &aitype,QWidget *parent = nullptr);
+    MainWindow(std::shared_ptr<DataBaseManager>&theDatabaseManager,const GameType &gametype,const AIType &aitype,QWidget *parent = nullptr);
     ~MainWindow();
 
 private:
     std::unique_ptr<Ui::MainWindow> ui;
+
+    //数据库控制接口
+    std::shared_ptr<DataBaseManager>databaseManager;
 
     //数据层访问接口，底下三个ＡＩ也要取得对于数据层的访问权限，所以这里设置为shared_ptr
     std::shared_ptr<GameModel>game;
