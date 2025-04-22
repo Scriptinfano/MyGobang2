@@ -9,7 +9,8 @@
 #include <QTimer>
 #include "point.h"
 #include <QDebug>
-MainWindow::MainWindow(std::shared_ptr<DataBaseManager>&theDatabaseManager,const GameType &gametype,const AIType &aitype,QWidget *parent)
+
+MainWindow::MainWindow(std::shared_ptr<DataBaseManager>&theDatabaseManager,const GameType &gametype,const AIType &aitype,const int theUserIndex,QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -24,6 +25,7 @@ MainWindow::MainWindow(std::shared_ptr<DataBaseManager>&theDatabaseManager,const
 
     //赋值数据库接口
     databaseManager=theDatabaseManager;
+    userIndex=theUserIndex;
     // 初始化游戏
     initGame(gametype,aitype);
 }
@@ -46,10 +48,26 @@ static int rowcol2pos(int val)
 }
 void MainWindow::paintEvent(QPaintEvent *event)
 {
-    QPainter painter(this);
 
+
+
+
+    QPainter painter(this);
     painter.fillRect(rect(), QColor(139, 69, 19));       // 设置背景色为棋盘的棕色
     painter.setRenderHint(QPainter::Antialiasing, true); // 启用抗锯齿渲染，平滑图形边缘
+
+    // 设置字体和颜色
+    QFont font;
+    font.setPointSize(12); // 字体大小你可以自行调整
+    painter.setFont(font);
+    painter.setPen(Qt::black); // 设置字体颜色
+
+    // 绘制文字内容，你可以自行替换字符串
+    QString userText = "当前用户:";
+    QString userName=databaseManager->getUserNameByIndex(userIndex);
+    userText+=userName;
+    painter.drawText(MARGIN, MARGIN / 2, userText);
+
     // 绘制棋盘线
     for (int i = 0; i < BOARD_GRID_SIZE; i++)
     {
@@ -170,10 +188,15 @@ bool MainWindow::judgeWinOrLose(){
         int x=p.x,y=p.y;
         if (game->isWin(x, y)) {
             QString str;
-            if (p.color == true)
+            if (p.color == true){
                 str = "黑棋";
-            else if (p.color == false)
+                databaseManager->recordWin(userIndex);
+            }
+            else if (p.color == false){
                 str = "白棋";
+                databaseManager->recordLose(userIndex);
+            }
+
             QMessageBox::StandardButton btnValue = QMessageBox::information(this,"游戏结束",str + "胜利");
             if (btnValue == QMessageBox::Ok) {
                 // 重置游戏状态，重新开始游戏

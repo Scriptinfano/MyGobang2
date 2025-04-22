@@ -19,9 +19,12 @@ public:
 
     AIType getAIType() const { return aiType; }
 
+    int getUserIndex()const{return currentUser;}
+
 private slots:
     void onStartClicked();
     void onGameTypeChanged(int index);
+    void onUserChanged(int index);
     void onPlayVideoClicked();
 private:
     std::unique_ptr<QLabel>gameTypeLabel;
@@ -39,6 +42,7 @@ private:
     std::shared_ptr<DataBaseManager>databaseManager;
     GameType gameType = MAN;
     AIType aiType = LOCALEVALUATION;
+    int currentUser=1;//当前用户在数据库表中条目的编号
 };
 
 #endif // MAINMENU_H

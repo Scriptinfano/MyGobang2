@@ -15,9 +15,10 @@ public:
     explicit DataBaseManager(QObject *parent = nullptr);
     ~DataBaseManager();
     bool addUser(const QString& username);
-    bool recordWin(const QString& username);  // 胜场+1，总场+1，重新计算胜率
-    bool recordLose(const QString& username);
+    bool recordWin(int index);  // 胜场+1，总场+1，重新计算胜率
+    bool recordLose(int index);
     QStringList getAllUsernames();
+    QString getUserNameByIndex(int index);
 signals:
 private:
     QSqlDatabase db;

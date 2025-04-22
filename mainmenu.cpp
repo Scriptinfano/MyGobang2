@@ -20,8 +20,8 @@ MainMenu::MainMenu(std::shared_ptr<DataBaseManager>&theDatabaseManager,QWidget *
 
     userLabel=std::make_unique<QLabel>("选择用户",this);
     userCombo=std::make_unique<QComboBox>(this);
-    //TODO userCombo加载数据库中的条目
-    userCombo->addItems(databaseManager->getAllUsernames());
+    QStringList names=databaseManager->getAllUsernames();
+    userCombo->addItems(names);
 
 
     startButton =std::make_unique<QPushButton>("开始游戏", this);
@@ -48,6 +48,7 @@ MainMenu::MainMenu(std::shared_ptr<DataBaseManager>&theDatabaseManager,QWidget *
     mainLayout->addWidget(videoButton.get());
 
     connect(gameTypeCombo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged),this, &MainMenu::onGameTypeChanged);
+    connect(userCombo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged),this, &MainMenu::onUserChanged);
     connect(startButton.get(), &QPushButton::clicked, this, &MainMenu::onStartClicked);
     connect(videoButton.get(), &QPushButton::clicked, this, &MainMenu::onPlayVideoClicked);
 }
@@ -64,9 +65,13 @@ void MainMenu::onStartClicked() {
         else
             throw std::runtime_error("aiType出现了未定义的行为");
     }
+    int userIndex=userCombo->currentIndex();//combo中的第一个条目的编号从0开始，数据库中表users条目的编号从1开始
+    currentUser=++userIndex;
     accept();
 }
-
+void MainMenu::onUserChanged(int index){
+    qDebug()<<"index="<<index;
+}
 void MainMenu::onGameTypeChanged(int index) {
     if (index == 1) { // 选择了人机对战
         aiTypeCombo->setEnabled(true);

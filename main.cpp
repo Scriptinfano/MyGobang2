@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 
     MainMenu menu(databaseManager);
     if (menu.exec() == QDialog::Accepted) {
-        MainWindow w(databaseManager,menu.getGameType(), menu.getAIType());
+        MainWindow w(databaseManager,menu.getGameType(), menu.getAIType(),menu.getUserIndex());
         w.show();
         return a.exec();
     }

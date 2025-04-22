@@ -16,7 +16,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(std::shared_ptr<DataBaseManager>&theDatabaseManager,const GameType &gametype,const AIType &aitype,QWidget *parent = nullptr);
+    MainWindow(std::shared_ptr<DataBaseManager>&theDatabaseManager,const GameType &gametype,const AIType &aitype,const int theUserIndex,QWidget *parent = nullptr);
     ~MainWindow();
 
 private:
@@ -37,6 +37,7 @@ private:
     int clickPosRow = -1;//即将绘制在棋盘上的棋子的横坐标
     int clickPosCol = -1;//即将绘制在棋盘上的棋子的横坐标
     bool selectPos = false;//是否有位置被选中了
+    int userIndex=1;//当前用户是谁
 
     /**
      * @brief initGame 在构造函数中调用，开始初始化游戏的数据
