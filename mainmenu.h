@@ -1,7 +1,7 @@
 #ifndef MAINMENU_H
 #define MAINMENU_H
 
-#include <QDialog>
+
 #include <QComboBox>
 #include <QPushButton>
 #include <QLabel>
@@ -10,16 +10,10 @@
 #include "gamemodel.h"
 
 #include "databasemanager.h"
-class MainMenu : public QDialog {
+class MainMenu : public QWidget {
     Q_OBJECT
 public:
-    explicit MainMenu(std::shared_ptr<DataBaseManager>&theDatabaseManager,QWidget *parent = nullptr);
-
-    GameType getGameType() const { return gameType; }
-
-    AIType getAIType() const { return aiType; }
-
-    int getUserIndex()const{return currentUser;}
+    explicit MainMenu(QWidget *parent = nullptr);
 
 private slots:
     void onStartClicked();

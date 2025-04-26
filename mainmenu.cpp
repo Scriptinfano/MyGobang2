@@ -2,10 +2,11 @@
 #include "mainmenu.h"
 #include "usermanagerwindow.h"
 #include "videodialog.h"
-MainMenu::MainMenu(std::shared_ptr<DataBaseManager>&theDatabaseManager,QWidget *parent) : QDialog(parent) {
+#include "mainwindow.h"
+MainMenu::MainMenu(QWidget *parent) : QWidget(parent) {
     setWindowTitle("五子棋");
 
-    databaseManager=theDatabaseManager;
+    databaseManager=std::make_shared<DataBaseManager>();
 
     gameTypeLabel = std::make_unique<QLabel>("选择游戏模式:", this);
     gameTypeCombo = std::make_unique<QComboBox>(this);
@@ -78,7 +79,9 @@ void MainMenu::onStartClicked() {
     }
     int userIndex=userCombo->currentIndex();//combo中的第一个条目的编号从0开始，数据库中表users条目的编号从1开始
     currentUser=++userIndex;
-    accept();
+    MainWindow *w=new MainWindow(databaseManager,gameType, aiType,currentUser,this);
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    w->exec();
 }
 void MainMenu::onUserChanged(int index){
     qDebug()<<"index="<<index;

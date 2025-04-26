@@ -11,12 +11,10 @@
 #include <QDebug>
 
 MainWindow::MainWindow(std::shared_ptr<DataBaseManager>&theDatabaseManager,const GameType &gametype,const AIType &aitype,const int theUserIndex,QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+    :QDialog(parent)
 {
-    ui->setupUi(this);
     // 启用鼠标跟踪
     setMouseTracking(true);
-    centralWidget()->setMouseTracking(true);
     // 设置窗口大小
     int blockTotalLength=BLOCK_SIZE*(BOARD_GRID_SIZE-1);//所有棋盘方格子占据的总长度
     int height=MARGIN * 3 + BLOCK_SIZE * (BOARD_GRID_SIZE-1);

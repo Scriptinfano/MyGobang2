@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <QDialog>
 #include "gamemodel.h"
 #include "localevaluationai.h"
 #include "alphabetaai.h"
@@ -11,7 +11,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
+class MainWindow : public QDialog
 {
     Q_OBJECT
 
@@ -20,7 +20,6 @@ public:
     ~MainWindow();
 
 private:
-    std::unique_ptr<Ui::MainWindow> ui;
 
     //数据库控制接口
     std::shared_ptr<DataBaseManager>databaseManager;
