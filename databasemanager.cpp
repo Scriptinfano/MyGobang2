@@ -28,7 +28,7 @@ bool DataBaseManager::openDatabase() {
 }
 
 bool DataBaseManager::addUser(const QString& username) {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("INSERT INTO users (username) VALUES (:username)");
     query.bindValue(":username", username);
 
@@ -40,7 +40,7 @@ bool DataBaseManager::addUser(const QString& username) {
 }
 
 bool DataBaseManager::recordWin(int index) {
-    QSqlQuery query;
+    QSqlQuery query(db);
     // 查询当前胜场与总场
     query.prepare("SELECT wins, total FROM users WHERE id = :id");
     query.bindValue(":id", index);
@@ -57,7 +57,7 @@ bool DataBaseManager::recordWin(int index) {
     double winrate = total > 0 ? static_cast<double>(wins) / total : 0.0;
 
     // 更新数据库
-    QSqlQuery updateQuery;
+    QSqlQuery updateQuery(db);
     updateQuery.prepare("UPDATE users SET wins = :wins, total = :total, winrate = :winrate WHERE id = :id");
     updateQuery.bindValue(":wins", wins);
     updateQuery.bindValue(":total", total);
@@ -73,7 +73,7 @@ bool DataBaseManager::recordWin(int index) {
 }
 
 bool DataBaseManager::recordLose(int index) {
-    QSqlQuery query;
+    QSqlQuery query(db);
     // 查询当前胜场与总场
     query.prepare("SELECT wins, total FROM users WHERE id = :id");
     query.bindValue(":id", index);
@@ -89,7 +89,7 @@ bool DataBaseManager::recordLose(int index) {
     double winrate = total > 0 ? static_cast<double>(wins) / total : 0.0;
 
     // 更新数据库
-    QSqlQuery updateQuery;
+    QSqlQuery updateQuery(db);
     updateQuery.prepare("UPDATE users SET total = :total, winrate = :winrate WHERE id = :id");
     updateQuery.bindValue(":total", total);
     updateQuery.bindValue(":winrate", winrate);
@@ -122,7 +122,7 @@ QStringList DataBaseManager::getAllUsernames() {
 }
 
 QString DataBaseManager::getUserNameByIndex(int index) {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("SELECT username FROM users WHERE id = :index");
     query.bindValue(":index", index);
 
@@ -138,3 +138,54 @@ QString DataBaseManager::getUserNameByIndex(int index) {
         return QString();
     }
 }
+QList<UserRecord> DataBaseManager::getAllUsers() {
+    QList<UserRecord> users;
+    QSqlQuery query("SELECT id, username, wins, total, winrate FROM users");
+
+    while (query.next()) {
+        UserRecord record;
+        record.id = query.value("id").toInt();
+        record.username = query.value("username").toString();
+        record.wins = query.value("wins").toInt();
+        record.total = query.value("total").toInt();
+        record.winrate = query.value("winrate").toDouble();
+        users.append(record);
+    }
+
+    return users;
+}
+
+bool DataBaseManager::deleteUser(int id) {
+    QSqlQuery query(db);
+    query.prepare("DELETE FROM users WHERE id = :id");
+    query.bindValue(":id", id);
+    if (!query.exec()) {
+        qWarning() << "Failed to delete user:" << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool DataBaseManager::updateUsername(int id, const QString& newUsername) {
+    QSqlQuery query(db);
+    query.prepare("UPDATE users SET username = :username WHERE id = :id");
+    query.bindValue(":username", newUsername);
+    query.bindValue(":id", id);
+    if (!query.exec()) {
+        qWarning() << "Failed to update username:" << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool DataBaseManager::isUsernameExists(const QString& username) {
+    QSqlQuery query(db);
+    query.prepare("SELECT COUNT(*) FROM users WHERE username = :username");
+    query.bindValue(":username", username);
+    if (!query.exec() || !query.next()) {
+        qWarning() << "Username check failed:" << query.lastError().text();
+        return false;
+    }
+    return query.value(0).toInt() > 0;
+}
+

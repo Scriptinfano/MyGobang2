@@ -27,6 +27,7 @@ qt_add_executable(MyGoBang2
     acstring.cpp alphabetaai.cpp gamemodel.cpp globals.cpp localevaluationai.cpp main.cpp mainmenu.cpp mainwindow.cpp mctsai.cpp pairhash.cpp pattern.cpp publictool.cpp zobristhash.cpp
     videodialog.h videodialog.cpp
     databasemanager.h databasemanager.cpp
+    usermanagerwindow.h usermanagerwindow.cpp
 )
 
 target_link_libraries(MyGoBang2

@@ -8,6 +8,15 @@
 #include <QSqlError>
 #include <QString>
 #include <QVariant>
+
+struct UserRecord {
+    int id;
+    QString username;
+    int wins;
+    int total;
+    double winrate;
+};
+
 class DataBaseManager : public QObject
 {
     Q_OBJECT
@@ -19,6 +28,10 @@ public:
     bool recordLose(int index);
     QStringList getAllUsernames();
     QString getUserNameByIndex(int index);
+    QList<UserRecord> getAllUsers();
+    bool deleteUser(int id);
+    bool updateUsername(int id, const QString& newUsername);
+    bool isUsernameExists(const QString& username);
 signals:
 private:
     QSqlDatabase db;

@@ -1,6 +1,7 @@
 // MainMenu.cpp
 #include "mainmenu.h"
-
+#include "usermanagerwindow.h"
+#include "videodialog.h"
 MainMenu::MainMenu(std::shared_ptr<DataBaseManager>&theDatabaseManager,QWidget *parent) : QDialog(parent) {
     setWindowTitle("五子棋");
 
@@ -26,6 +27,7 @@ MainMenu::MainMenu(std::shared_ptr<DataBaseManager>&theDatabaseManager,QWidget *
 
     startButton =std::make_unique<QPushButton>("开始游戏", this);
     videoButton = std::make_unique<QPushButton>("播放算法讲解视频", this);
+    userManageButton = std::make_unique<QPushButton>("用户管理",this);
 
     mainLayout = std::make_unique<QVBoxLayout>(this);
 
@@ -46,11 +48,20 @@ MainMenu::MainMenu(std::shared_ptr<DataBaseManager>&theDatabaseManager,QWidget *
     mainLayout->addLayout(userLayout.get());
     mainLayout->addWidget(startButton.get());
     mainLayout->addWidget(videoButton.get());
+    mainLayout->addWidget(userManageButton.get());
 
     connect(gameTypeCombo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged),this, &MainMenu::onGameTypeChanged);
     connect(userCombo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged),this, &MainMenu::onUserChanged);
     connect(startButton.get(), &QPushButton::clicked, this, &MainMenu::onStartClicked);
     connect(videoButton.get(), &QPushButton::clicked, this, &MainMenu::onPlayVideoClicked);
+    connect(userManageButton.get(), &QPushButton::clicked, this, &MainMenu::onUserManageButtonClicked);
+}
+
+void MainMenu::onUserManageButtonClicked(){
+    //TODO 创建用户管理界面类，并实例化
+    UserManagerWindow*userWindow=new UserManagerWindow(databaseManager,this);
+    userWindow->setAttribute(Qt::WA_DeleteOnClose);
+    userWindow->exec();
 }
 
 void MainMenu::onStartClicked() {

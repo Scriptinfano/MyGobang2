@@ -8,8 +8,8 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include "gamemodel.h"
-#include "videodialog.h"
-#include"databasemanager.h"
+
+#include "databasemanager.h"
 class MainMenu : public QDialog {
     Q_OBJECT
 public:
@@ -26,6 +26,7 @@ private slots:
     void onGameTypeChanged(int index);
     void onUserChanged(int index);
     void onPlayVideoClicked();
+    void onUserManageButtonClicked();
 private:
     std::unique_ptr<QLabel>gameTypeLabel;
     std::unique_ptr<QComboBox>gameTypeCombo;
@@ -40,6 +41,7 @@ private:
     std::unique_ptr<QHBoxLayout>aiTypeLayout;
     std::unique_ptr<QHBoxLayout>userLayout;
     std::shared_ptr<DataBaseManager>databaseManager;
+    std::unique_ptr<QPushButton>userManageButton;
     GameType gameType = MAN;
     AIType aiType = LOCALEVALUATION;
     int currentUser=1;//当前用户在数据库表中条目的编号

@@ -48,10 +48,6 @@ static int rowcol2pos(int val)
 }
 void MainWindow::paintEvent(QPaintEvent *event)
 {
-
-
-
-
     QPainter painter(this);
     painter.fillRect(rect(), QColor(139, 69, 19));       // 设置背景色为棋盘的棕色
     painter.setRenderHint(QPainter::Antialiasing, true); // 启用抗锯齿渲染，平滑图形边缘
