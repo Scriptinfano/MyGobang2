@@ -35,6 +35,8 @@ private slots:
      * @brief onSelectionChanged
      */
     void onSelectionChanged();
+
+    void onCellChanged(int row, int column);
 private:
     void setupUI();
     void updateButtonStates();

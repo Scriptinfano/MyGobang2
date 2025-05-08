@@ -2,11 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QDialog>
+
 #include "gamemodel.h"
 #include "localevaluationai.h"
 #include "alphabetaai.h"
 #include "mctsai.h"
 #include "databasemanager.h"
+#include "timelogger.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -31,12 +33,15 @@ private:
 
     std::unique_ptr<LocalEvaluationAI>localEvaluationAI_ptr;
     std::unique_ptr<AlphaBetaAI>alphabetaAI_ptr;
-    std::shared_ptr<MCTSAI> MCTSAI_ptr;
+    std::unique_ptr<MCTSAI> MCTSAI_ptr;
 
     int clickPosRow = -1;//即将绘制在棋盘上的棋子的横坐标
     int clickPosCol = -1;//即将绘制在棋盘上的棋子的横坐标
     bool selectPos = false;//是否有位置被选中了
     int userIndex=1;//当前用户是谁
+
+    //算法测时器
+    std::unique_ptr<TimeLogger> logger;
 
     /**
      * @brief initGame 在构造函数中调用，开始初始化游戏的数据

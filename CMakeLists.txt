@@ -28,6 +28,7 @@ qt_add_executable(MyGoBang2
     videodialog.h videodialog.cpp
     databasemanager.h databasemanager.cpp
     usermanagerwindow.h usermanagerwindow.cpp
+    timelogger.h timelogger.cpp
 )
 
 target_link_libraries(MyGoBang2

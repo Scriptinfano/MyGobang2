@@ -110,7 +110,6 @@ bool GameModel::isWin(int row, int col) {
     // 横向、纵向、对角线（两个方向）四个方向的判断
     // 横向：dx=0, dy=1
     if (checkDirection(row, col, 0, 1)||checkDirection(row, col, 1, 0)||checkDirection(row, col, 1, 1)||checkDirection(row, col, -1, 1)){
-        gameStatus=WIN;
         return true;
     }
     return false;
@@ -125,4 +124,8 @@ bool GameModel::isDeadGame()
 int GameModel::getBoardValue(int row, int col)
 {
     return gameMapVec->at(row).at(col);
+}
+
+void GameModel::setGameStatus(GameStatus gst){
+    gameStatus=gst;
 }

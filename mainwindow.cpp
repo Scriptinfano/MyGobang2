@@ -26,6 +26,8 @@ MainWindow::MainWindow(std::shared_ptr<DataBaseManager>&theDatabaseManager,const
     userIndex=theUserIndex;
     // 初始化游戏
     initGame(gametype,aitype);
+    // 初始化算法计时器
+    logger=std::make_unique<TimeLogger>();
 }
 MainWindow::~MainWindow()
 {
@@ -35,8 +37,10 @@ void MainWindow::initGame(const GameType &gametype,const AIType &aitype)
     game = std::make_shared<GameModel>(aitype,gametype);
     localEvaluationAI_ptr=std::make_unique<LocalEvaluationAI>(game);
     alphabetaAI_ptr=std::make_unique<AlphaBetaAI>(game);
-    MCTSAI_ptr=std::make_shared<MCTSAI>(game,MCTS_SIMULATION_COUNT,MCTS_TIME_LIMIT);
+    MCTSAI_ptr=std::make_unique<MCTSAI>(game,MCTS_SIMULATION_COUNT,MCTS_TIME_LIMIT);
     game->startGame();
+    //算法计时器要知道当前记录的是哪一个算法的时间，这个函数内部会创建一个新文件
+    logger->initLogger(game->getAiType());//游戏状态每次重置，也就是每次定出胜负，都要调用此函数，来新建一个日志文件并以新建的日志文件为后续的算法时间输出目的地
     update();
 }
 
@@ -190,11 +194,12 @@ bool MainWindow::judgeWinOrLose(){
                 str = "白棋";
                 databaseManager->recordLose(userIndex);
             }
-
+            game->setGameStatus(WIN);
             QMessageBox::StandardButton btnValue = QMessageBox::information(this,"游戏结束",str + "胜利");
             if (btnValue == QMessageBox::Ok) {
                 // 重置游戏状态，重新开始游戏
                 game->startGame();
+                logger->initLogger(game->getAiType());
                 return true;
             }
         }else if(game->isDeadGame()){
@@ -202,6 +207,7 @@ bool MainWindow::judgeWinOrLose(){
             if (btnValue == QMessageBox::Ok) {
                 // 重置游戏状态，重新开始游戏
                 game->startGame();
+                logger->initLogger(game->getAiType());
                 return true;
             }
         }

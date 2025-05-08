@@ -129,6 +129,7 @@ public:
     GameType getGameType() const;
     void setAiType(AIType newAiType);
     AIType getAiType() const;
+    void setGameStatus(GameStatus gst);
     bool getPlayerFlag() const;
     GameStatus getGameStatus() const;
 };

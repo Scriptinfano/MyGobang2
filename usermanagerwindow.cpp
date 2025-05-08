@@ -131,7 +131,7 @@ void UserManagerWindow::onSelectionChanged()
 void UserManagerWindow::setupUI()
 {
     table = new QTableWidget(this);
-    table->setColumnCount(4);
+    table->setColumnCount(5);
     table->setHorizontalHeaderLabels(QStringList() << "ID" << "用户名" << "胜场" << "总场"<<"胜率");
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -150,6 +150,7 @@ void UserManagerWindow::setupUI()
     connect(deleteUserButton, &QPushButton::clicked, this, &UserManagerWindow::onDeleteUserClicked);
     connect(editUserButton, &QPushButton::clicked, this, &UserManagerWindow::onEditUserClicked);
     connect(table->selectionModel(), &QItemSelectionModel::selectionChanged, this, &UserManagerWindow::onSelectionChanged);
+    connect(table, &QTableWidget::cellChanged, this, &UserManagerWindow::onCellChanged);
 
     QHBoxLayout* buttonLayout = new QHBoxLayout;
     buttonLayout->addWidget(refreshButton);
@@ -173,4 +174,8 @@ void UserManagerWindow::updateButtonStates()
 bool UserManagerWindow::isUsernameExists(const QString &name)
 {
     return databaseManager->isUsernameExists(name);
+}
+
+void UserManagerWindow::onCellChanged(int row, int column){
+
 }

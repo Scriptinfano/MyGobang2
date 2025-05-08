@@ -53,6 +53,7 @@ private:
      * @return std::stack<AiJudge::point> 按评估分数降序排列的候选落子点栈，栈顶是分数最大的候选点
      */
     std::stack<Point> getPossibleNextStep(std::vector<Point>& state, bool nowcolor);
+
     /**
      * @brief getScoreInDir
      * @param color
@@ -63,6 +64,7 @@ private:
      * @return
      */
     int getScoreInDir(bool color,int x,int y,std::vector<Point> state,int dir);
+
     /**
      * @brief getScore
      * @param color

@@ -59,7 +59,6 @@ MainMenu::MainMenu(QWidget *parent) : QWidget(parent) {
 }
 
 void MainMenu::onUserManageButtonClicked(){
-    //TODO 创建用户管理界面类，并实例化
     UserManagerWindow*userWindow=new UserManagerWindow(databaseManager,this);
     userWindow->setAttribute(Qt::WA_DeleteOnClose);
     userWindow->exec();
