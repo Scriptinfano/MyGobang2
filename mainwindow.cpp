@@ -24,10 +24,13 @@ MainWindow::MainWindow(std::shared_ptr<DataBaseManager>&theDatabaseManager,const
     //赋值数据库接口
     databaseManager=theDatabaseManager;
     userIndex=theUserIndex;
+
+    logger=std::make_unique<TimeLogger>();
     // 初始化游戏
     initGame(gametype,aitype);
     // 初始化算法计时器
-    logger=std::make_unique<TimeLogger>();
+
+
 }
 MainWindow::~MainWindow()
 {
@@ -40,6 +43,7 @@ void MainWindow::initGame(const GameType &gametype,const AIType &aitype)
     MCTSAI_ptr=std::make_unique<MCTSAI>(game,MCTS_SIMULATION_COUNT,MCTS_TIME_LIMIT);
     game->startGame();
     //算法计时器要知道当前记录的是哪一个算法的时间，这个函数内部会创建一个新文件
+
     logger->initLogger(game->getAiType());//游戏状态每次重置，也就是每次定出胜负，都要调用此函数，来新建一个日志文件并以新建的日志文件为后续的算法时间输出目的地
     update();
 }
@@ -239,19 +243,25 @@ void MainWindow::chessOneByPerson() {
 void MainWindow::chessOneByAI() {
     switch (game->getAiType()) {
         case LOCALEVALUATION: {
+            logger->startTiming();
             Point p=localEvaluationAI_ptr->getNextStep();
+            logger->endTimingAndLog();
             clickPosRow = p.x;
             clickPosCol = p.y;
             break;
         }
         case MCTS: {
+            logger->startTiming();
             std::pair<int,int>p=MCTSAI_ptr->getBestMove();
+            logger->endTimingAndLog();
             clickPosRow=p.first;
             clickPosCol=p.second;
             break;
         }
         case ALPHABETA: {
+            logger->startTiming();//算法运行时间的记录
             Point p=alphabetaAI_ptr->getBestMove();
+            logger->endTimingAndLog();
             clickPosRow = p.x;
             clickPosCol = p.y;
             break;

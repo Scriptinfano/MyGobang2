@@ -12,7 +12,7 @@ public:
 
     void startTiming();
 
-    void endTimingAndLog(int stepNumber);
+    void endTimingAndLog();
 
     /**
      * @brief initLogger 重新创建一个新文件，并以新文件作为新的日志输出目的地，并将当前记录算法的名字记录在文件的名字上
@@ -22,7 +22,7 @@ public:
 private:
     QElapsedTimer timer;
 
-    std::unique_ptr<QFile> file;
+    QFile file;
 
     int stepCounter=0;//每一局游戏中的步数，initLogger的时候请归零
 };
