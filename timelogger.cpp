@@ -35,7 +35,7 @@ QString aiTypeToString(AIType type) {
 void TimeLogger::initLogger(AIType type){
     qDebug() << "Current working dir: " << QDir::currentPath();
     // Step 1: 确保 logs 目录存在
-    QDir logDir("logs");
+    QDir logDir("/Users/mavrick/QTProjects/MyGoBang2/logs");
     if (!logDir.exists()) {
         logDir.mkpath(".");
     }
