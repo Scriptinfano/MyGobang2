@@ -1,0 +1,29 @@
+{
+	"configurations": [
+		{
+			"name": "Mac",
+			"includePath": [
+				"${workspaceFolder}/**",
+				"/Users/mavrick/Qt/6.5.8/macos/include/**",
+				"/Users/mavrick/Qt/6.5.8/macos/lib/QtCore.framework/Versions/A/Headers/**",
+				"/Users/mavrick/Qt/6.5.8/macos/lib/QtWidgets.framework/Versions/A/Headers/**",
+				"/Users/mavrick/Qt/6.5.8/macos/lib/QtGui.framework/Versions/A/Headers/**",
+				"/Users/mavrick/Qt/6.5.8/macos/lib/QtMultimedia.framework/Versions/A/Headers/**",
+				"/Users/mavrick/Qt/6.5.8/macos/lib/QtMultimediaWidgets.framework/Versions/A/Headers/**",
+				"/Users/mavrick/Qt/6.5.8/macos/lib/QtSql.framework/Versions/A/Headers/**",
+				"/opt/homebrew/include/**",
+				"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/**"
+			],
+			"defines": [],
+			"macFrameworkPath": [
+				"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+			],
+			"compilerPath": "/usr/bin/clang++",
+			"cStandard": "c17",
+			"cppStandard": "c++23",
+			"intelliSenseMode": "macos-clang-arm64",
+			"configurationProvider": "ms-vscode.cmake-tools"
+		}
+	],
+	"version": 4
+}
