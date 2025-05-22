@@ -42,9 +42,9 @@ Point AlphaBetaAI::getBestMove(){
         Point tmpStep=alphabetaSearch(state,false,0,-INF,INF,i);
         //更新aiStep
         if(tmpStep.score>aiStep.score){
-             aiStep=tmpStep;
-             aiStep.x=tmpStep.x;
-             aiStep.y=tmpStep.y;
+            aiStep=tmpStep;
+            aiStep.x=tmpStep.x;
+            aiStep.y=tmpStep.y;
         }
         //有必胜棋型的出现
         if(tmpStep.score>720*2){

@@ -19,6 +19,13 @@ set_source_files_properties(${APP_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Reso
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Multimedia MultimediaWidgets Sql)
 
+# 添加 Qt 包含路径
+include_directories(${Qt6Core_INCLUDE_DIRS}
+                   ${Qt6Widgets_INCLUDE_DIRS}
+                   ${Qt6Multimedia_INCLUDE_DIRS}
+                   ${Qt6MultimediaWidgets_INCLUDE_DIRS}
+                   ${Qt6Sql_INCLUDE_DIRS})
+
 qt_standard_project_setup()
 
 qt_add_executable(MyGoBang2
