@@ -204,11 +204,13 @@ bool MainWindow::judgeWinOrLose()
             {
                 str = "黑棋";
                 databaseManager->recordWin(userIndex);
+                logger->recordWinOrLose('W');
             }
             else if (p.color == false)
             {
                 str = "白棋";
                 databaseManager->recordLose(userIndex);
+                logger->recordWinOrLose('L');
             }
             game->setGameStatus(WIN);
             QMessageBox::StandardButton btnValue = QMessageBox::information(this, "游戏结束", str + "胜利");
@@ -222,6 +224,7 @@ bool MainWindow::judgeWinOrLose()
         }
         else if (game->isDeadGame())
         {
+            logger->recordWinOrLose('D');
             QMessageBox::StandardButton btnValue = QMessageBox::information(this, "游戏结束", "平局");
             if (btnValue == QMessageBox::Ok)
             {

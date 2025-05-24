@@ -19,6 +19,12 @@ public:
      * @param type
      */
     void initLogger(AIType type);
+
+    /**
+     * @brief recordWinOrLose 记录每局游戏的结果，tag为W表示胜利，tag为L表示失败，tag为D表示平局
+     * @param tag
+     */
+    void recordWinOrLose(char tag);
 private:
     QElapsedTimer timer;
 

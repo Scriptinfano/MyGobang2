@@ -74,3 +74,14 @@ void TimeLogger::initLogger(AIType type)
     }
     stepCounter = 0;
 }
+
+void TimeLogger::recordWinOrLose(char tag)
+{
+
+    if (file.isOpen())
+    {
+        QTextStream out(&file);
+        out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")
+            << " - Win or Lose: " << tag << "\n";
+    }
+}
