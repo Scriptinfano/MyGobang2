@@ -71,7 +71,7 @@ Point AlphaBetaAI::alphabetaSearch(std::vector<Point> &state, bool nowcolor, int
     int cnt=0;
     while(!nextPossibleStep.empty()){
         cnt++;
-        if(cnt>10&&maxDepth>4)
+        if(cnt>10&&maxDepth>4)//当最大搜索深度比4大，那么只考虑前10个比较优秀的位置
             break;
         Point tpstep=nextPossibleStep.top();
         nextPossibleStep.pop();

@@ -25,6 +25,11 @@ private:
 
 public:
     ZobristHash();
+    /**
+     * @brief getZobristHash 获取当前棋盘状态的哈希值
+     * @param state 当前棋盘状态
+     * @return 返回当前棋盘状态的哈希值
+     */
     ll getZobristHash(std::vector<Point>state);
     bool hasKey(ll key);
     /**
@@ -41,8 +46,28 @@ public:
      * @param value 哈希值
      */
     void updateHashValue(ll key,int value);
+
+    //TODO 以下两个函数是用来保存和加载zobrist表的，每次对局保存Zobrist表，保存的对局越多，那么全局评估就越来越没有必要，所以需要保存到文件中，下次启动时加载
+    /**
+     * @brief saveZobristHash 保存zobrist表到文件中
+     */
+    void saveZobristHash();
+    /**
+     * @brief loadZobristHash 从文件中加载zobrist表
+     */
+    void loadZobristHash();
 private:
+    /**
+     * @brief getRandom64 生成一个64位的随机数
+     * @return 返回一个64位的随机数
+     */
     ll getRandom64();
+
+    /**
+     * @brief getDataFilePath 获取zobrist表的文件路径
+     * @return 返回zobrist表的文件路径
+     */
+    std::string getDataFilePath();
 };
 
 #endif // ZOBRISTHASH_H

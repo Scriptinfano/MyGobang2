@@ -9,42 +9,42 @@
 #include <QTimer>
 #include "point.h"
 #include <QDebug>
+#include <QDir>
+#include <QFile>
 
-MainWindow::MainWindow(std::shared_ptr<DataBaseManager>&theDatabaseManager,const GameType &gametype,const AIType &aitype,const int theUserIndex,QWidget *parent)
-    :QDialog(parent)
+MainWindow::MainWindow(std::shared_ptr<DataBaseManager> &theDatabaseManager, const GameType &gametype, const AIType &aitype, const int theUserIndex, QWidget *parent)
+    : QDialog(parent)
 {
     // 启用鼠标跟踪
     setMouseTracking(true);
     // 设置窗口大小
-    int blockTotalLength=BLOCK_SIZE*(BOARD_GRID_SIZE-1);//所有棋盘方格子占据的总长度
-    int height=MARGIN * 3 + BLOCK_SIZE * (BOARD_GRID_SIZE-1);
-    int width=MARGIN * 2 + blockTotalLength;
-    setFixedSize(width,height);
+    int blockTotalLength = BLOCK_SIZE * (BOARD_GRID_SIZE - 1); // 所有棋盘方格子占据的总长度
+    int height = MARGIN * 3 + BLOCK_SIZE * (BOARD_GRID_SIZE - 1);
+    int width = MARGIN * 2 + blockTotalLength;
+    setFixedSize(width, height);
 
-    //赋值数据库接口
-    databaseManager=theDatabaseManager;
-    userIndex=theUserIndex;
+    // 赋值数据库接口
+    databaseManager = theDatabaseManager;
+    userIndex = theUserIndex;
 
-    logger=std::make_unique<TimeLogger>();
+    logger = std::make_unique<TimeLogger>();
     // 初始化游戏
-    initGame(gametype,aitype);
+    initGame(gametype, aitype);
     // 初始化算法计时器
-
-
 }
 MainWindow::~MainWindow()
 {
 }
-void MainWindow::initGame(const GameType &gametype,const AIType &aitype)
+void MainWindow::initGame(const GameType &gametype, const AIType &aitype)
 {
-    game = std::make_shared<GameModel>(aitype,gametype);
-    localEvaluationAI_ptr=std::make_unique<LocalEvaluationAI>(game);
-    alphabetaAI_ptr=std::make_unique<AlphaBetaAI>(game);
-    MCTSAI_ptr=std::make_unique<MCTSAI>(game,MCTS_SIMULATION_COUNT,MCTS_TIME_LIMIT);
+    game = std::make_shared<GameModel>(aitype, gametype);
+    localEvaluationAI_ptr = std::make_unique<LocalEvaluationAI>(game);
+    alphabetaAI_ptr = std::make_unique<AlphaBetaAI>(game);
+    MCTSAI_ptr = std::make_unique<MCTSAI>(game, MCTS_SIMULATION_COUNT, MCTS_TIME_LIMIT);
     game->startGame();
-    //算法计时器要知道当前记录的是哪一个算法的时间，这个函数内部会创建一个新文件
+    // 算法计时器要知道当前记录的是哪一个算法的时间，这个函数内部会创建一个新文件
 
-    logger->initLogger(game->getAiType());//游戏状态每次重置，也就是每次定出胜负，都要调用此函数，来新建一个日志文件并以新建的日志文件为后续的算法时间输出目的地
+    logger->initLogger(game->getAiType()); // 游戏状态每次重置，也就是每次定出胜负，都要调用此函数，来新建一个日志文件并以新建的日志文件为后续的算法时间输出目的地
     update();
 }
 
@@ -66,8 +66,8 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
     // 绘制文字内容，你可以自行替换字符串
     QString userText = "当前用户:";
-    QString userName=databaseManager->getUserNameByIndex(userIndex);
-    userText+=userName;
+    QString userName = databaseManager->getUserNameByIndex(userIndex);
+    userText += userName;
     painter.drawText(MARGIN, MARGIN / 2, userText);
 
     // 绘制棋盘线
@@ -83,35 +83,42 @@ void MainWindow::paintEvent(QPaintEvent *event)
     // 绘制选中点
     QBrush brush;                     // 画刷用于填充样式、颜色和纹理，绘制填充区域
     brush.setStyle(Qt::SolidPattern); // 设定填充的样式，这里是实心填充样式，即用画刷的当前颜色填充区域
-    if (selectPos==true&&PublicTool::posIsValid(clickPosRow,clickPosCol)) {
-        //如果某个点被选中了，然后再判断当前玩家的棋子颜色是什么，以绘制对应颜色的提示点
+    if (selectPos == true && PublicTool::posIsValid(clickPosRow, clickPosCol))
+    {
+        // 如果某个点被选中了，然后再判断当前玩家的棋子颜色是什么，以绘制对应颜色的提示点
         if (game->getPlayerFlag())
             brush.setColor(Qt::black);
         else
             brush.setColor(Qt::white);
         painter.setBrush(brush);
-        //drawRect的四个参数分别为小矩形左上角的横纵坐标和水平方向长度、垂直方向长度
+        // drawRect的四个参数分别为小矩形左上角的横纵坐标和水平方向长度、垂直方向长度
         painter.drawRect(MARGIN + BLOCK_SIZE * clickPosCol - MARK_SIZE / 2,
                          MARGIN + BLOCK_SIZE * clickPosRow - MARK_SIZE / 2,
                          MARK_SIZE,
                          MARK_SIZE);
     }
 
-    //绘制棋子
-    for (int i = 0; i < BOARD_GRID_SIZE; i++) {
-        for (int j = 0; j < BOARD_GRID_SIZE; j++) {
-            //根据当前此处放的是黑棋还是白旗，设定绘制的颜色
+    // 绘制棋子
+    for (int i = 0; i < BOARD_GRID_SIZE; i++)
+    {
+        for (int j = 0; j < BOARD_GRID_SIZE; j++)
+        {
+            // 根据当前此处放的是黑棋还是白旗，设定绘制的颜色
 
-            if (game->checkBoardPos(i,j) == BLACK) {
+            if (game->checkBoardPos(i, j) == BLACK)
+            {
                 brush.setColor(Qt::black);
-            } else if (game->checkBoardPos(i,j) == WHITE) {
+            }
+            else if (game->checkBoardPos(i, j) == WHITE)
+            {
                 brush.setColor(Qt::white);
-            } else
+            }
+            else
                 continue;
             painter.setBrush(brush);
-            painter.drawEllipse(QPoint(rowcol2pos(j),rowcol2pos(i)),
+            painter.drawEllipse(QPoint(rowcol2pos(j), rowcol2pos(i)),
                                 CHESS_RADIUS,
-                                CHESS_RADIUS); //这是绘制圆形的方法，包括圆和椭圆
+                                CHESS_RADIUS); // 这是绘制圆形的方法，包括圆和椭圆
         }
     }
 }
@@ -146,7 +153,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         int rightBottomPosY = leftTopPosY + BLOCK_SIZE;
 
         // 要在鼠标当前位置所在的方块的四个角的哪一个点上绘制提示点，要有两个条件满足，一是不能有棋子，二是鼠标当前位置和该点的距离要小于全局变量POS_OFFSET
-        if (distanceJudge(x, y, leftTopPosX, leftTopPosY) && game->checkBoardPos(row,col) == EMPTY)
+        if (distanceJudge(x, y, leftTopPosX, leftTopPosY) && game->checkBoardPos(row, col) == EMPTY)
         {
             clickPosRow = row;
             clickPosCol = col;
@@ -154,7 +161,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             update();
             return;
         }
-        if (distanceJudge(x, y, rightTopPosX, rightTopPosY) && game->checkBoardPos(row,col+1) == EMPTY)
+        if (distanceJudge(x, y, rightTopPosX, rightTopPosY) && game->checkBoardPos(row, col + 1) == EMPTY)
         {
             clickPosRow = row;
             clickPosCol = col + 1;
@@ -162,7 +169,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             update();
             return;
         }
-        if (distanceJudge(x, y, leftBottomPosX, leftBottomPosY) && game->checkBoardPos(row+1,col) == EMPTY)
+        if (distanceJudge(x, y, leftBottomPosX, leftBottomPosY) && game->checkBoardPos(row + 1, col) == EMPTY)
         {
             clickPosRow = row + 1;
             clickPosCol = col;
@@ -170,7 +177,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             update();
             return;
         }
-        if (distanceJudge(x, y, rightBottomPosX, rightBottomPosY) && game->checkBoardPos(row+1,col+1) == EMPTY)
+        if (distanceJudge(x, y, rightBottomPosX, rightBottomPosY) && game->checkBoardPos(row + 1, col + 1) == EMPTY)
         {
             clickPosRow = row + 1;
             clickPosCol = col + 1;
@@ -179,36 +186,45 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             return;
         }
     }
-    selectPos=false;
+    selectPos = false;
 }
 
-bool MainWindow::judgeWinOrLose(){
+bool MainWindow::judgeWinOrLose()
+{
     // 判断输赢
     // 只要棋步里现在有棋子，就可以开始判断
-    if (game->steps.size()) {
-        Point p=game->steps.back();
-        int x=p.x,y=p.y;
-        if (game->isWin(x, y)) {
+    if (game->steps.size())
+    {
+        Point p = game->steps.back();
+        int x = p.x, y = p.y;
+        if (game->isWin(x, y))
+        {
             QString str;
-            if (p.color == true){
+            if (p.color == true)
+            {
                 str = "黑棋";
                 databaseManager->recordWin(userIndex);
             }
-            else if (p.color == false){
+            else if (p.color == false)
+            {
                 str = "白棋";
                 databaseManager->recordLose(userIndex);
             }
             game->setGameStatus(WIN);
-            QMessageBox::StandardButton btnValue = QMessageBox::information(this,"游戏结束",str + "胜利");
-            if (btnValue == QMessageBox::Ok) {
+            QMessageBox::StandardButton btnValue = QMessageBox::information(this, "游戏结束", str + "胜利");
+            if (btnValue == QMessageBox::Ok)
+            {
                 // 重置游戏状态，重新开始游戏
                 game->startGame();
                 logger->initLogger(game->getAiType());
                 return true;
             }
-        }else if(game->isDeadGame()){
-            QMessageBox::StandardButton btnValue = QMessageBox::information(this,"游戏结束","平局");
-            if (btnValue == QMessageBox::Ok) {
+        }
+        else if (game->isDeadGame())
+        {
+            QMessageBox::StandardButton btnValue = QMessageBox::information(this, "游戏结束", "平局");
+            if (btnValue == QMessageBox::Ok)
+            {
                 // 重置游戏状态，重新开始游戏
                 game->startGame();
                 logger->initLogger(game->getAiType());
@@ -220,57 +236,113 @@ bool MainWindow::judgeWinOrLose(){
 }
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    //判断此时有没有点被选中，如果选中的话才能继续
+    // 判断此时有没有点被选中，如果选中的话才能继续
     if (selectPos == false)
         return;
     else
         selectPos = false;
     chessOneByPerson();
-    bool isEnd=judgeWinOrLose();//人落子之后判断一下输赢
-    if(!isEnd&&game->getGameType()==AI){
+    bool isEnd = judgeWinOrLose(); // 人落子之后判断一下输赢
+    if (!isEnd && game->getGameType() == AI)
+    {
         chessOneByAI();
-        judgeWinOrLose();//AI落子之后再判断一下输赢
+        judgeWinOrLose(); // AI落子之后再判断一下输赢
     }
 }
 
-void MainWindow::chessOneByPerson() {
-    if(clickPosRow!=-1&&clickPosCol!=-1&&game->checkBoardPos(clickPosRow,clickPosCol)==EMPTY){
-        game->updateGameModel(clickPosRow,clickPosCol);
-        update();//update函数会激活paintEvent事件，会重新绘制所有元素，包括棋子
+void MainWindow::chessOneByPerson()
+{
+    if (clickPosRow != -1 && clickPosCol != -1 && game->checkBoardPos(clickPosRow, clickPosCol) == EMPTY)
+    {
+        game->updateGameModel(clickPosRow, clickPosCol);
+        update(); // update函数会激活paintEvent事件，会重新绘制所有元素，包括棋子
     }
 }
 
-void MainWindow::chessOneByAI() {
-    switch (game->getAiType()) {
-        case LOCALEVALUATION: {
-            logger->startTiming();
-            Point p=localEvaluationAI_ptr->getNextStep();
-            logger->endTimingAndLog();
-            clickPosRow = p.x;
-            clickPosCol = p.y;
-            break;
-        }
-        case MCTS: {
-            logger->startTiming();
-            std::pair<int,int>p=MCTSAI_ptr->getBestMove();
-            logger->endTimingAndLog();
-            clickPosRow=p.first;
-            clickPosCol=p.second;
-            break;
-        }
-        case ALPHABETA: {
-            logger->startTiming();//算法运行时间的记录
-            Point p=alphabetaAI_ptr->getBestMove();
-            logger->endTimingAndLog();
-            clickPosRow = p.x;
-            clickPosCol = p.y;
-            break;
-        }
+void MainWindow::chessOneByAI()
+{
+    switch (game->getAiType())
+    {
+    case LOCALEVALUATION:
+    {
+        logger->startTiming();
+        Point p = localEvaluationAI_ptr->getNextStep();
+        logger->endTimingAndLog();
+        clickPosRow = p.x;
+        clickPosCol = p.y;
+        break;
     }
-    //TODO 以下几行代码仅测试使用，输出每次AI做出决策之后，val的最大和最小分别是多少，默认最小是0
-    qDebug()<<"MAXVAL="<<MAXVAL<<",MINVAL="<<MINVAL;
-    game->updateGameModel(clickPosRow,clickPosCol);
+    case MCTS:
+    {
+        logger->startTiming();
+        std::pair<int, int> p = MCTSAI_ptr->getBestMove();
+        logger->endTimingAndLog();
+        clickPosRow = p.first;
+        clickPosCol = p.second;
+        break;
+    }
+    case ALPHABETA:
+    {
+        logger->startTiming(); // 算法运行时间的记录
+        Point p = alphabetaAI_ptr->getBestMove();
+        logger->endTimingAndLog();
+        clickPosRow = p.x;
+        clickPosCol = p.y;
+        break;
+    }
+    }
+    // TODO 以下几行代码仅测试使用，输出每次AI做出决策之后，val的最大和最小分别是多少，默认最小是0
+    qDebug() << "MAXVAL=" << MAXVAL << ",MINVAL=" << MINVAL;
+    game->updateGameModel(clickPosRow, clickPosCol);
     update();
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    qDebug() << "窗口关闭事件触发";
 
+    // 调用删除空日志文件的函数
+    deleteLogFiles();
+
+    // 接受事件并关闭窗口
+    event->accept();
+}
+
+void MainWindow::deleteLogFiles()
+{
+    // TODO 此处的逻辑需要修改
+    QDir logDir("/Users/mavrick/QTProjects/MyGoBang2/logs");
+
+    if (logDir.exists())
+    {
+        QStringList logFiles = logDir.entryList(QStringList() << "*.txt", QDir::Files);
+        qDebug() << "日志目录路径:" << logDir.absolutePath();
+        qDebug() << "找到的日志文件数量:" << logFiles.size();
+        qDebug() << "日志文件列表:" << logFiles;
+
+        for (const QString &fileName : logFiles)
+        {
+            // 检测每个日志文件是否是空文件，如果是空文件则删除
+            QFile file(logDir.filePath(fileName));
+            if (file.open(QIODevice::ReadOnly))
+            {
+                if (file.size() == 0)
+                {
+                    file.close();
+                    if (!logDir.remove(fileName))
+                    {
+                        qDebug() << "无法删除空日志文件:" << fileName;
+                    }
+                    else
+                    {
+                        qDebug() << "已删除空日志文件:" << fileName;
+                    }
+                }
+                else
+                {
+                    file.close();
+                }
+            }
+        }
+    }
+}

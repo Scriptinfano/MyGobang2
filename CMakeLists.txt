@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.16)
 project(MyGoBang2 LANGUAGES CXX)
 
 # 指定使用 C++23 标准
@@ -18,6 +18,7 @@ set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development")
 set_source_files_properties(${APP_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Multimedia MultimediaWidgets Sql)
+find_package(nlohmann_json REQUIRED)
 
 # 添加 Qt 包含路径
 include_directories(${Qt6Core_INCLUDE_DIRS}
@@ -50,6 +51,7 @@ target_link_libraries(MyGoBang2
         Qt6::Multimedia
         Qt6::MultimediaWidgets
         Qt6::Sql
+        nlohmann_json::nlohmann_json
 )
 
 # 设置资源目录和目标目录
