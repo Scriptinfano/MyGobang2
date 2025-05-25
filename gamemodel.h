@@ -11,6 +11,7 @@ enum GameType
 {
     MAN, // 双人模式
     AI,  // 人机对战模式（简单评分算法）
+    AIAI
 };
 /**
  * @brief 游戏的状态
@@ -55,6 +56,11 @@ private:
      * @brief AI算法的类型
      */
     AIType aiType;
+
+    /**
+     * 自对弈的时候另一个AI算法的类型
+     */
+    AIType otherAiType;
     /**
      * @brief 游戏模式，人机对战还是双人对战
      */
@@ -70,7 +76,7 @@ public:
      */
     std::shared_ptr<std::vector<std::vector<int>>> gameMapVec;
 
-    GameModel(const AIType &aitype, const GameType gametype);
+    GameModel(const AIType &aitype, const AIType &otherAiType, const GameType gametype);
 
     /**
      * @brief steps 棋步数组，记录从开局到结束的每一步
@@ -129,6 +135,7 @@ public:
     GameType getGameType() const;
     void setAiType(AIType newAiType);
     AIType getAiType() const;
+    AIType getOtherAiType() const;
     void setGameStatus(GameStatus gst);
     bool getPlayerFlag() const;
     GameStatus getGameStatus() const;

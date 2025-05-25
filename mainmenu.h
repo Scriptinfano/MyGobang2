@@ -26,6 +26,9 @@ private:
     std::unique_ptr<QComboBox>gameTypeCombo;
     std::unique_ptr<QLabel>aiTypeLabel;
     std::unique_ptr<QComboBox>aiTypeCombo;
+    std::unique_ptr<QHBoxLayout> otherAiTypeLayout;
+    std::unique_ptr<QLabel> otherAiTypeLabel;
+    std::unique_ptr<QComboBox> otherAiTypeCombo;
     std::unique_ptr<QLabel>userLabel;
     std::unique_ptr<QComboBox>userCombo;
     std::unique_ptr<QPushButton> startButton;
@@ -38,6 +41,7 @@ private:
     std::unique_ptr<QPushButton>userManageButton;
     GameType gameType = MAN;
     AIType aiType = LOCALEVALUATION;
+    AIType otherAiType = LOCALEVALUATION;
     int currentUser=1;//当前用户在数据库表中条目的编号
 };
 

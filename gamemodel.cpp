@@ -2,12 +2,12 @@
 #include "publictool.h"
 #include "globals.h"
 #include "pattern.h"
-GameModel::GameModel(const AIType &aitype, const GameType gametype):
-    gameMapVec(std::make_shared<std::vector<std::vector<int>>>(BOARD_GRID_SIZE, std::vector<int>(BOARD_GRID_SIZE, 0))),
-    aiType(aitype),
-    gameType(gametype),
-    playerFlag(true),
-    gameStatus(DEAD)
+GameModel::GameModel(const AIType &aitype, const AIType &otherAiType, const GameType gametype) : gameMapVec(std::make_shared<std::vector<std::vector<int>>>(BOARD_GRID_SIZE, std::vector<int>(BOARD_GRID_SIZE, 0))),
+                                                                                                 aiType(aitype),
+                                                                                                 gameType(gametype),
+                                                                                                 playerFlag(true),
+                                                                                                 gameStatus(DEAD),
+                                                                                                 otherAiType(otherAiType)
 {
     acMachine=std::make_unique<AcString>(patternStrings);
 }
@@ -15,6 +15,11 @@ GameModel::GameModel(const AIType &aitype, const GameType gametype):
 AIType GameModel::getAiType() const
 {
     return aiType;
+}
+
+AIType GameModel::getOtherAiType() const
+{
+    return otherAiType;
 }
 
 void GameModel::setAiType(AIType newAiType)

@@ -12,7 +12,7 @@ extern const double DOUBLE_INF;//定义小数无穷大
 constexpr int MAXDEPTH=6;//最大搜索深度
 extern const int dx[4];
 extern const int dy[4];
-//TODO 下面两个变量是用来测试评估函数返回的最大最小值是多少的
+//下面两个变量是用来测试评估函数返回的最大最小值是多少的
 extern int MINVAL;
 extern int MAXVAL;
 #endif // GLOBALS_H

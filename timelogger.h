@@ -14,11 +14,13 @@ public:
 
     void endTimingAndLog();
 
+    void calculateAnalyzeInfo();
+
     /**
      * @brief initLogger 重新创建一个新文件，并以新文件作为新的日志输出目的地，并将当前记录算法的名字记录在文件的名字上
      * @param type
      */
-    void initLogger(AIType type);
+    void initLogger(GameType gameType, AIType aiType, AIType otherAiType);
 
     /**
      * @brief recordWinOrLose 记录每局游戏的结果，tag为W表示胜利，tag为L表示失败，tag为D表示平局
@@ -29,6 +31,8 @@ private:
     QElapsedTimer timer;
 
     QFile file;
+
+    std::vector<qint64> elapesedTimesVec;
 
     int stepCounter=0;//每一局游戏中的步数，initLogger的时候请归零
 };

@@ -12,11 +12,9 @@
 #include <QDir>
 #include <QFile>
 
-MainWindow::MainWindow(std::shared_ptr<DataBaseManager> &theDatabaseManager, const GameType &gametype, const AIType &aitype, const int theUserIndex, QWidget *parent)
+MainWindow::MainWindow(std::shared_ptr<DataBaseManager> &theDatabaseManager, const GameType &gametype, const AIType &aitype, const AIType &otherAitype, const int theUserIndex, QWidget *parent)
     : QDialog(parent)
 {
-    // 启用鼠标跟踪
-    setMouseTracking(true);
     // 设置窗口大小
     int blockTotalLength = BLOCK_SIZE * (BOARD_GRID_SIZE - 1); // 所有棋盘方格子占据的总长度
     int height = MARGIN * 3 + BLOCK_SIZE * (BOARD_GRID_SIZE - 1);
@@ -27,25 +25,32 @@ MainWindow::MainWindow(std::shared_ptr<DataBaseManager> &theDatabaseManager, con
     databaseManager = theDatabaseManager;
     userIndex = theUserIndex;
 
-    logger = std::make_unique<TimeLogger>();
-    // 初始化游戏
-    initGame(gametype, aitype);
     // 初始化算法计时器
+    logger = std::make_unique<TimeLogger>();
+    // 初始化游戏数据
+    initGame(gametype, aitype, otherAitype);
+    // 正式开始游戏
+    restartGame();
+    // 触发界面绘制paintEvent()
+    update();
 }
 MainWindow::~MainWindow()
 {
 }
-void MainWindow::initGame(const GameType &gametype, const AIType &aitype)
+void MainWindow::initGame(const GameType &gametype, const AIType &aitype, const AIType &otherAiType)
 {
-    game = std::make_shared<GameModel>(aitype, gametype);
+    game = std::make_shared<GameModel>(aitype, otherAiType, gametype);
     localEvaluationAI_ptr = std::make_unique<LocalEvaluationAI>(game);
     alphabetaAI_ptr = std::make_unique<AlphaBetaAI>(game);
     MCTSAI_ptr = std::make_unique<MCTSAI>(game, MCTS_SIMULATION_COUNT, MCTS_TIME_LIMIT);
-    game->startGame();
-    // 算法计时器要知道当前记录的是哪一个算法的时间，这个函数内部会创建一个新文件
 
-    logger->initLogger(game->getAiType()); // 游戏状态每次重置，也就是每次定出胜负，都要调用此函数，来新建一个日志文件并以新建的日志文件为后续的算法时间输出目的地
-    update();
+    // 初始化第二个AI
+    if (gametype == AIAI)
+    {
+        localEvaluationAI_ptr2 = std::make_unique<LocalEvaluationAI>(game);
+        alphabetaAI_ptr2 = std::make_unique<AlphaBetaAI>(game);
+        MCTSAI_ptr2 = std::make_unique<MCTSAI>(game, MCTS_SIMULATION_COUNT, MCTS_TIME_LIMIT);
+    }
 }
 
 static int rowcol2pos(int val)
@@ -216,9 +221,7 @@ bool MainWindow::judgeWinOrLose()
             QMessageBox::StandardButton btnValue = QMessageBox::information(this, "游戏结束", str + "胜利");
             if (btnValue == QMessageBox::Ok)
             {
-                // 重置游戏状态，重新开始游戏
-                game->startGame();
-                logger->initLogger(game->getAiType());
+                restartGame();
                 return true;
             }
         }
@@ -229,14 +232,52 @@ bool MainWindow::judgeWinOrLose()
             if (btnValue == QMessageBox::Ok)
             {
                 // 重置游戏状态，重新开始游戏
-                game->startGame();
-                logger->initLogger(game->getAiType());
+                restartGame();
                 return true;
             }
         }
     }
     return false;
 }
+
+void MainWindow::restartGame()
+{
+    game->startGame();                                                                  // 数据层面重置并准备开始新游戏
+    logger->initLogger(game->getGameType(), game->getAiType(), game->getOtherAiType()); // 日志模块重置并准备开始新游戏
+    // 如果是自对弈模式，则关闭鼠标追踪并开始设定计时准备开始自对弈流程
+    if (game->getGameType() == GameType::AIAI)
+    {
+        setMouseTracking(false);
+        QTimer::singleShot(2000, this, &MainWindow::aiBattleOne);
+    }
+    else
+        setMouseTracking(true);
+}
+void MainWindow::aiBattleOne()
+{
+    qDebug() << "第一个AI开始下棋";
+    chessOneByAI();
+    if (judgeWinOrLose())
+        return;
+    qDebug() << "等待1秒后执行第二个AI...";
+    // 延迟1秒后执行第二个AI的回合
+    QTimer::singleShot(2000, this, &MainWindow::aiBattleTwo);
+    update();
+}
+
+void MainWindow::aiBattleTwo()
+{
+    qDebug() << "第二个AI开始下棋";
+    chessOneByOtherAI();
+    if (!judgeWinOrLose())
+    {
+        qDebug() << "等待1秒后执行第一个AI...";
+        // 延迟1秒后执行第一个AI的回合
+        QTimer::singleShot(2000, this, &MainWindow::aiBattleOne);
+        update();
+    }
+}
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     // 判断此时有没有点被选中，如果选中的话才能继续
@@ -244,12 +285,15 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         return;
     else
         selectPos = false;
-    chessOneByPerson();
-    bool isEnd = judgeWinOrLose(); // 人落子之后判断一下输赢
-    if (!isEnd && game->getGameType() == AI)
+    if (game->getGameType() == AI)
     {
-        chessOneByAI();
-        judgeWinOrLose(); // AI落子之后再判断一下输赢
+        // 人机对战模式
+        chessOneByPerson();
+        if (!judgeWinOrLose())
+        {
+            chessOneByAI();
+            judgeWinOrLose(); // AI落子之后再判断一下输赢
+        }
     }
 }
 
@@ -299,7 +343,43 @@ void MainWindow::chessOneByAI()
     game->updateGameModel(clickPosRow, clickPosCol);
     update();
 }
-
+void MainWindow::chessOneByOtherAI()
+{
+    switch (game->getOtherAiType())
+    {
+    case LOCALEVALUATION:
+    {
+        logger->startTiming();
+        Point p = localEvaluationAI_ptr2->getNextStep();
+        logger->endTimingAndLog();
+        clickPosRow = p.x;
+        clickPosCol = p.y;
+        break;
+    }
+    case MCTS:
+    {
+        logger->startTiming();
+        std::pair<int, int> p = MCTSAI_ptr2->getBestMove();
+        logger->endTimingAndLog();
+        clickPosRow = p.first;
+        clickPosCol = p.second;
+        break;
+    }
+    case ALPHABETA:
+    {
+        logger->startTiming();
+        Point p = alphabetaAI_ptr2->getBestMove();
+        logger->endTimingAndLog();
+        clickPosRow = p.x;
+        clickPosCol = p.y;
+        break;
+    }
+    }
+    // TODO 以下几行代码仅测试使用，输出每次AI做出决策之后，val的最大和最小分别是多少，默认最小是0
+    qDebug() << "MAXVAL=" << MAXVAL << ",MINVAL=" << MINVAL;
+    game->updateGameModel(clickPosRow, clickPosCol);
+    update();
+}
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     qDebug() << "窗口关闭事件触发";
@@ -313,7 +393,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::deleteLogFiles()
 {
-    // TODO 此处的逻辑需要修改
+
     QDir logDir("/Users/mavrick/QTProjects/MyGoBang2/logs");
 
     if (logDir.exists())

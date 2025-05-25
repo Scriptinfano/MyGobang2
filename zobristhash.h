@@ -47,7 +47,7 @@ public:
      */
     void updateHashValue(ll key,int value);
 
-    //TODO 以下两个函数是用来保存和加载zobrist表的，每次对局保存Zobrist表，保存的对局越多，那么全局评估就越来越没有必要，所以需要保存到文件中，下次启动时加载
+    //以下两个函数是用来保存和加载zobrist表的，每次对局保存Zobrist表，保存的对局越多，那么全局评估就越来越没有必要，所以需要保存到文件中，下次启动时加载
     /**
      * @brief saveZobristHash 保存zobrist表到文件中
      */

@@ -1,0 +1,20 @@
+收集本机硬件配置中，请稍候...
+=== 系统信息 ===
+      System Version: macOS 15.5 (24F74)
+      Kernel Version: Darwin 24.5.0
+
+=== 芯片信息（CPU） ===
+Apple M1
+      Chip: Apple M1
+
+=== 内存信息 ===
+      Memory: 8 GB
+
+=== 磁盘信息 ===
+   Disk Size:                 245.1 GB (245107195904 Bytes) (exactly 478724992 512-Byte-Units)
+
+=== 显示器信息 ===
+          Resolution: 2560 x 1600 Retina
+
+=== 电池信息 ===
+          Cycle Count: 139
