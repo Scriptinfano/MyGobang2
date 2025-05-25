@@ -3,6 +3,9 @@
 #include "usermanagerwindow.h"
 #include "videodialog.h"
 #include "mainwindow.h"
+#include <QEvent>
+#include <QCloseEvent>
+
 MainMenu::MainMenu(QWidget *parent) : QWidget(parent)
 {
     setWindowTitle("五子棋");
@@ -33,6 +36,7 @@ MainMenu::MainMenu(QWidget *parent) : QWidget(parent)
     userCombo = std::make_unique<QComboBox>(this);
     QStringList names = databaseManager->getAllUsernames();
     userCombo->addItems(names);
+    userCombo->installEventFilter(this);
 
     startButton = std::make_unique<QPushButton>("开始游戏", this);
     videoButton = std::make_unique<QPushButton>("播放算法讲解视频", this);
@@ -71,6 +75,24 @@ MainMenu::MainMenu(QWidget *parent) : QWidget(parent)
     connect(userManageButton.get(), &QPushButton::clicked, this, &MainMenu::onUserManageButtonClicked);
 }
 
+void MainMenu::onUserComboBoxClicked()
+{
+    // 重新从数据库中读取数据
+    qDebug() << "onUserComboBoxClicked触发";
+    QStringList names = databaseManager->getAllUsernames();
+    userCombo->clear();
+    userCombo->addItems(names);
+}
+bool MainMenu::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == userCombo.get() && event->type() == QEvent::MouseButtonPress)
+    {
+        onUserComboBoxClicked();
+        return false; // 继续传递事件
+    }
+    return QWidget::eventFilter(obj, event);
+}
+
 void MainMenu::onUserManageButtonClicked()
 {
     UserManagerWindow *userWindow = new UserManagerWindow(databaseManager, this);
@@ -80,7 +102,7 @@ void MainMenu::onUserManageButtonClicked()
 
 void MainMenu::onStartClicked()
 {
-    if (gameType == AI||gameType==AIAI)
+    if (gameType == AI || gameType == AIAI)
     {
         int curindex = aiTypeCombo->currentIndex();
         if (curindex == 0)
@@ -91,7 +113,8 @@ void MainMenu::onStartClicked()
             aiType = ALPHABETA;
         else
             throw std::runtime_error("aiType出现了未定义的行为");
-        if(gameType==AIAI){
+        if (gameType == AIAI)
+        {
             curindex = otherAiTypeCombo->currentIndex();
             if (curindex == 0)
                 otherAiType = LOCALEVALUATION;
@@ -111,7 +134,7 @@ void MainMenu::onStartClicked()
 }
 void MainMenu::onUserChanged(int index)
 {
-    qDebug() << "index=" << index;
+    qDebug() << "onUserChanged()触发，index=" << index;
 }
 void MainMenu::onGameTypeChanged(int index)
 {
@@ -119,18 +142,23 @@ void MainMenu::onGameTypeChanged(int index)
     { // 选择了人机对战
         aiTypeCombo->setEnabled(true);
         otherAiTypeCombo->setEnabled(false);
+        userCombo->setEnabled(true);
         gameType = AI;
     }
     else if (index == 0)
     { // 人人对战
         aiTypeCombo->setEnabled(false);
         otherAiTypeCombo->setEnabled(false);
+        userCombo->setEnabled(true);
         gameType = MAN;
     }
     else
     {
         otherAiTypeCombo->setEnabled(true);
         aiTypeCombo->setEnabled(true);
+        // 用户复选框强行锁定到robots
+        userCombo->setCurrentIndex(1);
+        userCombo->setEnabled(false);
         gameType = AIAI;
     }
 }
@@ -140,4 +168,10 @@ void MainMenu::onPlayVideoClicked()
     VideoDialog *videoDialog = new VideoDialog(this);
     videoDialog->setAttribute(Qt::WA_DeleteOnClose); // 关闭时自动销毁
     videoDialog->exec();
+}
+
+void MainMenu::closeEvent(QCloseEvent *event)
+{
+    event->accept();            // 接受关闭事件
+    QWidget::closeEvent(event); // 调用父类的 closeEvent
 }

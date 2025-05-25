@@ -8,7 +8,6 @@
 #include <QCoreApplication> // 添加 QCoreApplication 头文件
 TimeLogger::TimeLogger()
 {
-    
 }
 
 void TimeLogger::startTiming()
@@ -41,15 +40,36 @@ void TimeLogger::calculateAnalyzeInfo()
             // 1、算一下所有时间的平均响应时间
             total += item;
             // 2、算一下最大响应时间
-            if(item>maximumValue)
+            if (item > maximumValue)
                 maximumValue = item;
         }
-        qint64 res = total / elapesedTimesVec.size();
-        QTextStream out(&file);
-        out << "平均响应时长=" << res << ";最大响应时间="<<maximumValue;
 
-        //3、算一下所有时间的标准差
-        qDebug() << "平均响应时长=" << res;
+        qint64 count = elapesedTimesVec.size();
+        qint64 res = count > 0 ? total / count : 0;
+
+        // 3、计算标准差（使用样本标准差公式）
+        double varianceSum = 0.0;
+        for (auto &item : elapesedTimesVec)
+        {
+            double diff = static_cast<double>(item) - static_cast<double>(res);
+            varianceSum += diff * diff;
+        }
+
+        double stddev = 0.0;
+        if (count > 1)
+            stddev = std::sqrt(varianceSum / (count - 1));
+
+        QTextStream out(&file);
+        out << "平均响应时长=" << res
+            << ";最大响应时间=" << maximumValue
+            << ";总耗时=" << total
+            << ";标准差=" << stddev << "\n";
+
+        // 在终端也输出统计信息
+        qDebug() << "平均响应时长=" << res
+                 << ";最大响应时间=" << maximumValue
+                 << ";总耗时=" << total
+                 << ";标准差=" << stddev;
     }
 }
 
@@ -87,7 +107,7 @@ void TimeLogger::initLogger(GameType gameType, AIType aiType, AIType otherAiType
     // 日志模块统计所记录的信息做相关计算
     calculateAnalyzeInfo();
 
-    //重新绑定新的文件
+    // 重新绑定新的文件
     qDebug() << "Current working dir: " << QDir::currentPath();
     // Step 1: 确保 logs 目录存在
     QString logDirPath = "/Users/mavrick/QTProjects/MyGoBang2/logs";
@@ -106,11 +126,13 @@ void TimeLogger::initLogger(GameType gameType, AIType aiType, AIType otherAiType
     QString otherAiTypeStr = aiTypeToString(otherAiType);
     QString gameTypeStr = gameTypeToString(gameType);
     QString fileName;
-    if (gameType == AIAI)
+    if (gameType != AIAI)
     {
         fileName = QString("%1/%2_%3_%4.txt").arg(logDirPath, timestamp, gameTypeStr, aiTypeStr);
-    }else{
-        fileName = QString("%1/%2_%3_%4_%5.txt").arg(logDirPath, timestamp, gameTypeStr, aiTypeStr,otherAiTypeStr);
+    }
+    else
+    {
+        fileName = QString("%1/%2_%3_%4_%5.txt").arg(logDirPath, timestamp, gameTypeStr, aiTypeStr, otherAiTypeStr);
     }
 
     // Step 3: 绑定新的文件名字，旧的已绑定文件，QT会自动关闭
@@ -122,7 +144,7 @@ void TimeLogger::initLogger(GameType gameType, AIType aiType, AIType otherAiType
         qDebug() << "无法打开日志文件：" << fileName;
         qDebug() << "错误信息：" << file.errorString();
     }
-    //重置相关成员变量
+    // 重置相关成员变量
     stepCounter = 0;
     elapesedTimesVec.clear();
 }

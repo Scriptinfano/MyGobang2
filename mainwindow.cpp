@@ -208,6 +208,7 @@ bool MainWindow::judgeWinOrLose()
             if (p.color == true)
             {
                 str = "黑棋";
+                //TODO 给AI自对弈的用户记录输赢的功能待测试
                 databaseManager->recordWin(userIndex);
                 logger->recordWinOrLose('W');
             }
@@ -338,7 +339,7 @@ void MainWindow::chessOneByAI()
         break;
     }
     }
-    // TODO 以下几行代码仅测试使用，输出每次AI做出决策之后，val的最大和最小分别是多少，默认最小是0
+    // 以下几行代码仅测试使用，输出每次AI做出决策之后，val的最大和最小分别是多少，默认最小是0
     qDebug() << "MAXVAL=" << MAXVAL << ",MINVAL=" << MINVAL;
     game->updateGameModel(clickPosRow, clickPosCol);
     update();
@@ -375,7 +376,7 @@ void MainWindow::chessOneByOtherAI()
         break;
     }
     }
-    // TODO 以下几行代码仅测试使用，输出每次AI做出决策之后，val的最大和最小分别是多少，默认最小是0
+    // 以下几行代码仅测试使用，输出每次AI做出决策之后，val的最大和最小分别是多少，默认最小是0
     qDebug() << "MAXVAL=" << MAXVAL << ",MINVAL=" << MINVAL;
     game->updateGameModel(clickPosRow, clickPosCol);
     update();

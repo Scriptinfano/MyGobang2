@@ -20,7 +20,6 @@ Point AlphaBetaAI::getBestMove()
     // 先看一下steps是不是没有任何棋步，如果没有任何棋步，则在最中心点下一个棋
     if (state.empty())
     {
-        // TODO 在这里返回一个中心点的坐标
         return Point(0, 7, 7, -INF); // 这里的第一个参数颜色其实不重要，因为有数据层在变换棋子的颜色，上层只取这里的坐标
     }
 
@@ -248,7 +247,7 @@ int AlphaBetaAI::evaluateState(std::vector<Point> &state, bool nextcolor)
         val = pointWIT - pointBLK;
         zobristHash_ptr->updateHashValue(nowkey, -val);
     }
-    // TODO 以下几行代码仅测试使用，测试出val在整个棋局中的一个变化的范围
+    // 以下几行代码仅测试使用，测试出val在整个棋局中的一个变化的范围
     if (val > MAXVAL)
         MAXVAL = val;
     if (val < MINVAL)
