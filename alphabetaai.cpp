@@ -9,7 +9,8 @@
 #include <unordered_set>
 #include <algorithm>
 #include <QDebug>
-AlphaBetaAI::AlphaBetaAI(const std::shared_ptr<GameModel> &theGameModel) : gameModel(theGameModel)
+
+AlphaBetaAI::AlphaBetaAI(const std::shared_ptr<GameModel> &theGameModel, int maxDepth) : gameModel(theGameModel),THEMAXDEPTH_(maxDepth)
 {
     zobristHash_ptr = std::make_unique<ZobristHash>();
 }
@@ -51,7 +52,7 @@ Point AlphaBetaAI::getBestMove()
         }
     }
     Point aiStep(0, 0, 0, -INF);
-    for (int i = 2; i <= MAXDEPTH; i += 2)
+    for (int i = 2; i <= THEMAXDEPTH_; i += 2)
     {
         Point tmpStep = alphabetaSearch(state, false, 0, -INF, INF, i);
         // 更新aiStep

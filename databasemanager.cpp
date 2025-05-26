@@ -27,15 +27,37 @@ bool DataBaseManager::openDatabase() {
     return true;
 }
 
-bool DataBaseManager::addUser(const QString& username) {
+bool DataBaseManager::addUser(const QString &username)
+{
     QSqlQuery query(db);
-    query.prepare("INSERT INTO users (username) VALUES (:username)");
+
+    // 获取当前最大 ID
+    int newId = 1;
+    if (query.exec("SELECT MAX(id) FROM users"))
+    {
+        if (query.next())
+        {
+            newId = query.value(0).toInt() + 1;
+        }
+    }
+    else
+    {
+        qWarning() << "Failed to get max ID:" << query.lastError().text();
+        return false;
+    }
+
+    // 插入新用户，字段名使用正确的版本
+    query.prepare("INSERT INTO users (id, username, wins, total, winrate) "
+                  "VALUES (:id, :username, 0, 0, 0.0)");
+    query.bindValue(":id", newId);
     query.bindValue(":username", username);
 
-    if (!query.exec()) {
+    if (!query.exec())
+    {
         qWarning() << "Add user failed:" << query.lastError().text();
         return false;
     }
+
     return true;
 }
 

@@ -32,11 +32,19 @@ MainMenu::MainMenu(QWidget *parent) : QWidget(parent)
     otherAiTypeCombo->addItem("AlphaBeta");
     otherAiTypeCombo->setEnabled(false);
 
+    difficultyLabel = std::make_unique<QLabel>("选择难度等级", this);
+    difficultyCombo = std::make_unique<QComboBox>(this);
+    difficultyCombo->addItem("初级");
+    difficultyCombo->addItem("中级");
+    difficultyCombo->addItem("高级");
+    difficultyCombo->setEnabled(false);
+
     userLabel = std::make_unique<QLabel>("选择用户", this);
     userCombo = std::make_unique<QComboBox>(this);
     QStringList names = databaseManager->getAllUsernames();
     userCombo->addItems(names);
     userCombo->installEventFilter(this);
+    userCombo->setEnabled(false);
 
     startButton = std::make_unique<QPushButton>("开始游戏", this);
     videoButton = std::make_unique<QPushButton>("播放算法讲解视频", this);
@@ -60,9 +68,14 @@ MainMenu::MainMenu(QWidget *parent) : QWidget(parent)
     otherAiTypeLayout->addWidget(otherAiTypeLabel.get());
     otherAiTypeLayout->addWidget(otherAiTypeCombo.get());
 
+    difficultyLayout = std::make_unique<QHBoxLayout>();
+    difficultyLayout->addWidget(difficultyLabel.get());
+    difficultyLayout->addWidget(difficultyCombo.get());
+
     mainLayout->addLayout(gameTypeLayout.get());
     mainLayout->addLayout(aiTypeLayout.get());
     mainLayout->addLayout(otherAiTypeLayout.get());
+    mainLayout->addLayout(difficultyLayout.get());
     mainLayout->addLayout(userLayout.get());
     mainLayout->addWidget(startButton.get());
     mainLayout->addWidget(videoButton.get());
@@ -73,6 +86,7 @@ MainMenu::MainMenu(QWidget *parent) : QWidget(parent)
     connect(startButton.get(), &QPushButton::clicked, this, &MainMenu::onStartClicked);
     connect(videoButton.get(), &QPushButton::clicked, this, &MainMenu::onPlayVideoClicked);
     connect(userManageButton.get(), &QPushButton::clicked, this, &MainMenu::onUserManageButtonClicked);
+    connect(aiTypeCombo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainMenu::onAiTypeChanged);
 }
 
 void MainMenu::onUserComboBoxClicked()
@@ -110,7 +124,10 @@ void MainMenu::onStartClicked()
         else if (curindex == 1)
             aiType = MCTS;
         else if (curindex == 2)
+        {
             aiType = ALPHABETA;
+            // TODO 在算法是ALPHABETA且选择人机对战的情况下，将难度等级传入MainWindow
+        }
         else
             throw std::runtime_error("aiType出现了未定义的行为");
         if (gameType == AIAI)
@@ -128,6 +145,7 @@ void MainMenu::onStartClicked()
     }
     int userIndex = userCombo->currentIndex(); // combo中的第一个条目的编号从0开始，数据库中表users条目的编号从1开始
     currentUser = ++userIndex;
+    // TODO 改造这里的MainWindow函数调用，来接受一个难度等级参数
     MainWindow *w = new MainWindow(databaseManager, gameType, aiType, otherAiType, currentUser, this);
     w->setAttribute(Qt::WA_DeleteOnClose);
     w->exec();
@@ -143,26 +161,58 @@ void MainMenu::onGameTypeChanged(int index)
         aiTypeCombo->setEnabled(true);
         otherAiTypeCombo->setEnabled(false);
         userCombo->setEnabled(true);
+        difficultyCombo->setEnabled(true);
         gameType = AI;
+        int curindex = aiTypeCombo->currentIndex();
+        // 只有在选择了人机对战且选择alpha-beta算法的情况下才能调节难度
+        if (curindex != 2)
+            difficultyCombo->setEnabled(false);
+        else
+            difficultyCombo->setEnabled(true);
     }
     else if (index == 0)
     { // 人人对战
         aiTypeCombo->setEnabled(false);
         otherAiTypeCombo->setEnabled(false);
-        userCombo->setEnabled(true);
+        userCombo->setEnabled(false);
+        difficultyCombo->setEnabled(false);
         gameType = MAN;
     }
     else
     {
+        // AI与AI对战
         otherAiTypeCombo->setEnabled(true);
         aiTypeCombo->setEnabled(true);
         // 用户复选框强行锁定到robots
         userCombo->setCurrentIndex(1);
         userCombo->setEnabled(false);
+        difficultyCombo->setEnabled(false);
         gameType = AIAI;
     }
 }
+void MainMenu::onAiTypeChanged(int index)
+{
+    switch (index)
+    {
+    case 0:
+    {
+        difficultyCombo->setEnabled(false);
+        break;
+    }
 
+    case 1:
+    {
+        difficultyCombo->setEnabled(false);
+        break;
+    }
+    case 2:
+    {
+        if (gameTypeCombo->currentIndex() != 2)
+            difficultyCombo->setEnabled(true);
+        break;
+    }
+    }
+}
 void MainMenu::onPlayVideoClicked()
 {
     VideoDialog *videoDialog = new VideoDialog(this);

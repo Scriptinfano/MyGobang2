@@ -10,11 +10,14 @@ private:
      //AI访问数据层的接口
     std::shared_ptr<GameModel> gameModel;
     std::unique_ptr<ZobristHash>zobristHash_ptr;
+
+    int THEMAXDEPTH_;
+
 public:
     /**
      * @brief AlphaBetaAI
      */
-    AlphaBetaAI(const std::shared_ptr<GameModel>& theGameModel);
+    AlphaBetaAI(const std::shared_ptr<GameModel>& theGameModel,int maxDepth);
 
     /**
      * @brief getBestMove 这是协调本算法所有流程的公开接口，返回经过算法运算之后的最佳棋步

@@ -11,7 +11,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
-
+// TODO 改造这里的构造函数参数，接受一个难度等级参数
 MainWindow::MainWindow(std::shared_ptr<DataBaseManager> &theDatabaseManager, const GameType &gametype, const AIType &aitype, const AIType &otherAitype, const int theUserIndex, QWidget *parent)
     : QDialog(parent)
 {
@@ -40,15 +40,18 @@ MainWindow::~MainWindow()
 void MainWindow::initGame(const GameType &gametype, const AIType &aitype, const AIType &otherAiType)
 {
     game = std::make_shared<GameModel>(aitype, otherAiType, gametype);
+
+    // 初始化第一个AI，这个AI如果是在AIAI模式下，将执黑棋
     localEvaluationAI_ptr = std::make_unique<LocalEvaluationAI>(game);
-    alphabetaAI_ptr = std::make_unique<AlphaBetaAI>(game);
+    // TODO 这里出于测试目的而暂时写死最大深度，后期将可以通过前端的难度调节来设定最大深度
+    alphabetaAI_ptr = std::make_unique<AlphaBetaAI>(game, GLOBALDEPTHFOUR);
     MCTSAI_ptr = std::make_unique<MCTSAI>(game, MCTS_SIMULATION_COUNT, MCTS_TIME_LIMIT);
 
-    // 初始化第二个AI
+    // 初始化第二个AI，这个AI如果是在AIAI模式下，将执白棋
     if (gametype == AIAI)
     {
         localEvaluationAI_ptr2 = std::make_unique<LocalEvaluationAI>(game);
-        alphabetaAI_ptr2 = std::make_unique<AlphaBetaAI>(game);
+        alphabetaAI_ptr2 = std::make_unique<AlphaBetaAI>(game, GLOBALDEPTHEIGHT);
         MCTSAI_ptr2 = std::make_unique<MCTSAI>(game, MCTS_SIMULATION_COUNT, MCTS_TIME_LIMIT);
     }
 }
@@ -72,7 +75,10 @@ void MainWindow::paintEvent(QPaintEvent *event)
     // 绘制文字内容，你可以自行替换字符串
     QString userText = "当前用户:";
     QString userName = databaseManager->getUserNameByIndex(userIndex);
-    userText += userName;
+    if (game->getGameType() == MAN)
+        userText += "当前模式是人人对战，不记录用户";
+    else
+        userText += userName;
     painter.drawText(MARGIN, MARGIN / 2, userText);
 
     // 绘制棋盘线
@@ -208,15 +214,20 @@ bool MainWindow::judgeWinOrLose()
             if (p.color == true)
             {
                 str = "黑棋";
-                //TODO 给AI自对弈的用户记录输赢的功能待测试
-                databaseManager->recordWin(userIndex);
-                logger->recordWinOrLose('W');
+                if (game->getGameType() != MAN)
+                {
+                    databaseManager->recordWin(userIndex);
+                    logger->recordWinOrLose('W');
+                }
             }
             else if (p.color == false)
             {
                 str = "白棋";
-                databaseManager->recordLose(userIndex);
-                logger->recordWinOrLose('L');
+                if (game->getGameType() != MAN)
+                {
+                    databaseManager->recordLose(userIndex);
+                    logger->recordWinOrLose('L');
+                }
             }
             game->setGameStatus(WIN);
             QMessageBox::StandardButton btnValue = QMessageBox::information(this, "游戏结束", str + "胜利");
@@ -295,6 +306,11 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
             chessOneByAI();
             judgeWinOrLose(); // AI落子之后再判断一下输赢
         }
+    }
+    else if (game->getGameType() == MAN)
+    {
+        chessOneByPerson();
+        judgeWinOrLose();
     }
 }
 

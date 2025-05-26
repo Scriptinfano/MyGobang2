@@ -21,6 +21,7 @@ class MainWindow : public QDialog
     Q_OBJECT
 
 public:
+    //TODO 改造这里的构造函数参数，接受一个难度等级参数
     MainWindow(std::shared_ptr<DataBaseManager> &theDatabaseManager, const GameType &gametype, const AIType &aitype, const AIType &otherAitype, const int theUserIndex, QWidget *parent = nullptr);
     ~MainWindow();
 
