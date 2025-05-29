@@ -32,6 +32,11 @@ private slots:
      * 切换用户的时候触发
      */
     void onUserChanged(int index);
+
+    /**
+     * 切换难度的时候触发
+     */
+    void onDifficultyChanged(int index);
     /**
      * 进入视频播放界面
      */
@@ -45,8 +50,11 @@ private slots:
      */
     void onUserComboBoxClicked();
 
+    
+
 private:
-    std::unique_ptr<QLabel> gameTypeLabel;
+    std::unique_ptr<QLabel>
+        gameTypeLabel;
     std::unique_ptr<QComboBox> gameTypeCombo;
     std::unique_ptr<QHBoxLayout> gameTypeLayout;
 

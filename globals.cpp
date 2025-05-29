@@ -5,3 +5,4 @@ const int INF=std::numeric_limits<int>::max();
 const double DOUBLE_INF=std::numeric_limits<double>::max();
 int MINVAL=0;//预估最小值-3020
 int MAXVAL=0;//预估最大值3940
+int MAXDEPTH = 6;

@@ -44,7 +44,8 @@ void MainWindow::initGame(const GameType &gametype, const AIType &aitype, const 
     // 初始化第一个AI，这个AI如果是在AIAI模式下，将执黑棋
     localEvaluationAI_ptr = std::make_unique<LocalEvaluationAI>(game);
     // TODO 这里出于测试目的而暂时写死最大深度，后期将可以通过前端的难度调节来设定最大深度
-    alphabetaAI_ptr = std::make_unique<AlphaBetaAI>(game, GLOBALDEPTHFOUR);
+    alphabetaAI_ptr = std::make_unique<AlphaBetaAI>(game, MAXDEPTH);
+    qDebug() << "当前搜索深度为" << MAXDEPTH;
     MCTSAI_ptr = std::make_unique<MCTSAI>(game, MCTS_SIMULATION_COUNT, MCTS_TIME_LIMIT);
 
     // 初始化第二个AI，这个AI如果是在AIAI模式下，将执白棋

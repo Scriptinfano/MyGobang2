@@ -82,13 +82,36 @@ MainMenu::MainMenu(QWidget *parent) : QWidget(parent)
     mainLayout->addWidget(userManageButton.get());
 
     connect(gameTypeCombo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainMenu::onGameTypeChanged);
+    connect(difficultyCombo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainMenu::onDifficultyChanged);
     connect(userCombo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainMenu::onUserChanged);
     connect(startButton.get(), &QPushButton::clicked, this, &MainMenu::onStartClicked);
     connect(videoButton.get(), &QPushButton::clicked, this, &MainMenu::onPlayVideoClicked);
     connect(userManageButton.get(), &QPushButton::clicked, this, &MainMenu::onUserManageButtonClicked);
     connect(aiTypeCombo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainMenu::onAiTypeChanged);
 }
+void MainMenu::onDifficultyChanged(int index)
+{
+    switch (index)
+    {
+        case 0:
+        {
+            
+            break;
+        }
 
+        case 1:
+        {
+            
+            break;
+        }
+        case 2:
+        {
+
+
+            break;
+        }
+    }
+}
 void MainMenu::onUserComboBoxClicked()
 {
     // 重新从数据库中读取数据
